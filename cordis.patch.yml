@@ -1,0 +1,11 @@
+# dsh-mobile profile patch layer — insert one loader entry for the
+# plugin package (node half = LAN proxy + PWA taps; browser half =
+# touch/mobile CSS, picked up through the package's dsh.client declaration).
+#
+# ⚠ SECURITY: enabling this row exposes the full Harness (including its
+#   code-execution tools) to every device on your LAN. Only keep it enabled
+#   on a network you trust, and remove the row when you do not need phone
+#   access.
+- insert:
+    - id: mobile
+      name: 'dsh-mobile'
