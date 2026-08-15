@@ -34,6 +34,33 @@ cd /path/to/deepseek-harness
 pnpm run build:lib:client   # 客户端 bundle 会被运行中的 GUI 自动热替换
 ```
 
+## 从 GitHub 安装
+
+仓库地址:**github.com/cindyguyuehu123/dsh-mobile**(已发布,`lib/` 构建产物随仓库分发)
+
+方式一(官方插件命令,自动克隆并安装依赖):
+
+```bash
+dsh plugin --profile web add https://github.com/cindyguyuehu123/dsh-mobile.git
+```
+
+方式二(手动注册,与 dsh-webchatlike 相同):
+
+```bash
+# 1. 克隆到本地并安装依赖
+git clone https://github.com/cindyguyuehu123/dsh-mobile.git
+cd dsh-mobile && pnpm install
+
+# 2. 在 ~/.dsh/profiles/web/package.json 的 dependencies 加入
+#    "dsh-mobile": "link:/绝对/路径/dsh-mobile"
+cd ~/.dsh/profiles/web && pnpm install
+
+# 3. 在 ~/.dsh/profiles/web/cordis.patch.yml 插入
+# - insert:
+#     - id: mobile
+#       name: 'dsh-mobile'
+```
+
 ## 安装
 
 ### 1. 构建
