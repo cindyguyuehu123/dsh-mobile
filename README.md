@@ -1,5 +1,7 @@
 # dsh-mobile
 
+[English](README.en.md)
+
 > 让 **DeepSeek Harness Web GUI 在 iPhone / iPad 上也能用**:局域网反向代理 + iOS PWA(添加到主屏幕)+ 触屏适配。
 
 DeepSeek Harness 的 Web GUI 默认只监听 `127.0.0.1`(上游出于安全**刻意禁止** `--host 0.0.0.0`)。本插件为它补齐手机端体验:
