@@ -17,22 +17,33 @@ DeepSeek Harness 的 Web GUI 默认只监听 `127.0.0.1`(上游出于安全**刻
 - 连接公共/陌生 Wi-Fi 时,从 `cordis.patch.yml` 移除 `mobile` 行(或临时把行注释掉)再重启;
 - 可选:用 `allow` 配置只放行指定手机 IP(见下文)。
 
-## 🔧 依赖 1 个 harness 源码补丁(必须)
+## 🔧 harness 源码补丁(按需,不依赖 dsh-webchatlike)
 
-**上游 bug**:客户端 `mintRpcId()` 使用 `crypto.randomUUID`,而该 API 只在**安全上下文**可用。`http://127.0.0.1` 是可信源(所以本机正常),但手机经局域网 IP 访问时**不是安全上下文**,`randomUUID` 为 undefined → 每个 RPC 都抛错 → 连接握手失败 → 手机端**一直转圈白屏**。
+**dsh-mobile 本身完全不依赖 dsh-webchatlike**——没装 webchatlike 的原版 harness 也能用移动版。补丁按需应用:
 
-需要给 harness 源码打一个小补丁(已备份在 `harness-patches/`):
+| 补丁 | 必需? | 说明 |
+|---|---|---|
+| 安全上下文 UUID | ✅ 必须 | 上游 bug: mintRpcId() 用 crypto.randomUUID,该 API 只在**安全上下文**可用。http://127.0.0.1 是可信源(本机正常),但手机经局域网 IP 访问时不是安全上下文,randomUUID 为 undefined → 每个 RPC 抛错 → 连接握手失败 → 手机端一直转圈白屏。打在上游**原版**文件上,与 webchatlike 无关 |
+| webchatlike 折叠回退 | ⚪ 仅配合 webchatlike | 修 webchatlike 的版本家族折叠在移动端失效(全新浏览器没有 localStorage 记录)。没装 webchatlike 就不需要——原版没有折叠功能,所有会话本来就独立显示 |
+
+### 补丁 1:安全上下文 UUID(必须,与 webchatlike 无关)
 
 | 文件 | 改动 |
 |---|---|
-| `packages/host/apiproxy/src/fetch/client.ts` | `mintRpcId()` 改用 `crypto.getRandomValues` 生成 v4 UUID(核心修复) |
-| `packages/client/ui-conversation/src/client/service.ts` | 附件草稿 id 同样替换 |
-| `packages/llm/llm/src/message.ts` | 消息 id 同样替换 |
+| packages/host/apiproxy/src/fetch/client.ts | mintRpcId() 改用 crypto.getRandomValues 生成 v4 UUID(核心修复) |
+| packages/client/ui-conversation/src/client/service.ts | 附件草稿 id 同样替换 |
+| packages/llm/llm/src/message.ts | 消息 id 同样替换 |
 
 ```bash
 cd /path/to/deepseek-harness
 pnpm run build:lib:client   # 客户端 bundle 会被运行中的 GUI 自动热替换
 ```
+
+> 补丁均已备份在 harness-patches/,升级 harness 后重新应用即可。
+
+### 补丁 2:webchatlike 折叠回退(可选,仅当你也用 dsh-webchatlike)
+
+packages/client/ui-workspace/src/client/tree.ts、WorkspaceBrowser.tsx、index.ts——同样备份在 harness-patches/。
 
 ## 从 GitHub 安装
 
