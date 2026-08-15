@@ -17,6 +17,23 @@ DeepSeek Harness 的 Web GUI 默认只监听 `127.0.0.1`(上游出于安全**刻
 - 连接公共/陌生 Wi-Fi 时,从 `cordis.patch.yml` 移除 `mobile` 行(或临时把行注释掉)再重启;
 - 可选:用 `allow` 配置只放行指定手机 IP(见下文)。
 
+## 🔧 依赖 1 个 harness 源码补丁(必须)
+
+**上游 bug**:客户端 `mintRpcId()` 使用 `crypto.randomUUID`,而该 API 只在**安全上下文**可用。`http://127.0.0.1` 是可信源(所以本机正常),但手机经局域网 IP 访问时**不是安全上下文**,`randomUUID` 为 undefined → 每个 RPC 都抛错 → 连接握手失败 → 手机端**一直转圈白屏**。
+
+需要给 harness 源码打一个小补丁(已备份在 `harness-patches/`):
+
+| 文件 | 改动 |
+|---|---|
+| `packages/host/apiproxy/src/fetch/client.ts` | `mintRpcId()` 改用 `crypto.getRandomValues` 生成 v4 UUID(核心修复) |
+| `packages/client/ui-conversation/src/client/service.ts` | 附件草稿 id 同样替换 |
+| `packages/llm/llm/src/message.ts` | 消息 id 同样替换 |
+
+```bash
+cd /path/to/deepseek-harness
+pnpm run build:lib:client   # 客户端 bundle 会被运行中的 GUI 自动热替换
+```
+
 ## 安装
 
 ### 1. 构建
