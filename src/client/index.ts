@@ -64,6 +64,27 @@ html {
     min-height: 30px;
   }
 }
+
+@media (max-width: 640px) {
+  /* Composer action row on narrow screens: the command/permission/model/send
+     row does not fit the card, flex-squeezes the permission group to width 0
+     and overlaps the model trigger. Shrink the button gaps and forbid
+     shrinking so every button keeps its natural width and stays inside the
+     card. Scope via the module-local suffixes (_card/_row/_tools). */
+  [class$='_card'] [class$='_row'] {
+    gap: 4px !important;
+    flex-wrap: wrap !important;
+  }
+  [class$='_card'] [class$='_row'] > * {
+    flex-shrink: 0 !important;
+  }
+  [class$='_card'] [class$='_tools'] {
+    gap: 6px !important;
+  }
+  [class$='_card'] [class$='_trailing'] {
+    gap: 4px !important;
+  }
+}
 `
 
 /**
